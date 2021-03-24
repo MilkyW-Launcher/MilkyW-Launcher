@@ -10,7 +10,7 @@ const request = require('request')
 const logger  = require('./loggerutil')('%c[Azuriom]', 'color: #a02d2a; font-weight: bold')
 
 // Constants
-const authpath = 'https://finalium.fr/api/auth'
+const authpath = 'https://milkyw.finalium.fr/api/auth'
 const statuses = [
     {
         service: 'sessionserver.mojang.com',
