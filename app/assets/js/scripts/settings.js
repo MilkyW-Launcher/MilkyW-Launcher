@@ -444,7 +444,7 @@ function populateAuthAccounts(){
         const acc = authAccounts[val]
         authAccountStr += `<div class="settingsAuthAccount" uuid="${acc.uuid}">
             <div class="settingsAuthAccountLeft">
-                <img class="settingsAuthAccountImage" alt="${acc.displayName}" src="https://crafatar.com/renders/body/${acc.uuid}?scale=3&default=MHF_Steve&overlay">
+               <img class="settingsAuthAccountImage" alt="${acc.displayName}" src="https://crafatar.com/renders/body/${acc.uuid}?scale=3&default=MHF_Steve&overlay">
             </div>
             <div class="settingsAuthAccountRight">
                 <div class="settingsAuthAccountDetails">
@@ -465,6 +465,13 @@ function populateAuthAccounts(){
                 </div>
             </div>
         </div>`
+
+        /*new skinview3d.SkinViewer({
+            canvas: document.getElementById("settingsAuthAccountImage"),
+            //width: 120,
+            //height: 240,
+            skin: `https://finalium.fr/api/skins/${acc.username}`
+        });*/
     })
 
     settingsCurrentAccounts.innerHTML = authAccountStr
@@ -1169,10 +1176,10 @@ const settingsAboutChangelogText   = settingsTabAbout.getElementsByClassName('se
 const settingsAboutChangelogButton = settingsTabAbout.getElementsByClassName('settingsChangelogButton')[0]
 
 // Bind the devtools toggle button.
-document.getElementById('settingsAboutDevToolsButton').onclick = (e) => {
-    let window = remote.getCurrentWindow()
-    window.toggleDevTools()
-}
+//document.getElementById('settingsAboutDevToolsButton').onclick = (e) => {
+//    let window = remote.getCurrentWindow()
+//    window.toggleDevTools()
+//}
 
 /**
  * Return whether or not the provided version is a prerelease.
@@ -1220,7 +1227,7 @@ function populateAboutVersionInformation(){
  */
 function populateReleaseNotes(){
     $.ajax({
-        url: 'https://github.com/dscalzi/HeliosLauncher/releases.atom',
+        url: 'https://github.com/Pwatoos66/FinaLauncher/releases.atom',
         success: (data) => {
             const version = 'v' + remote.app.getVersion()
             const entries = $(data).find('entry')

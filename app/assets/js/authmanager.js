@@ -6,12 +6,13 @@
  * if applicable, in the config using the ConfigManager. All login procedures should
  * be made through this module.
  * 
- * @module authmanager
  */
 // Requirements
+const Azuriom        = require('./azuriom')
 const ConfigManager = require('./configmanager')
 const LoggerUtil    = require('./loggerutil')
 const Mojang        = require('./mojang')
+//const { Authenticator }       = require('azuriom-auth'). new Authenticator('https://finalium.fr');
 const logger        = LoggerUtil('%c[AuthManager]', 'color: #a02d2a; font-weight: bold')
 const loggerSuccess = LoggerUtil('%c[AuthManager]', 'color: #209b07; font-weight: bold')
 
@@ -28,16 +29,25 @@ const loggerSuccess = LoggerUtil('%c[AuthManager]', 'color: #209b07; font-weight
  */
 exports.addAccount = async function(username, password){
     try {
-        const session = await Mojang.authenticate(username, password, ConfigManager.getClientToken())
-        if(session.selectedProfile != null){
-            const ret = ConfigManager.addAuthAccount(session.selectedProfile.id, session.accessToken, username, session.selectedProfile.name)
+        const session = await Azuriom.authenticate(username, password)
+        if(session.id != null){
+            const ret = ConfigManager.addAuthAccount(session.uuid, session.accessToken, username, session.username)
             if(ConfigManager.getClientToken() == null){
                 ConfigManager.setClientToken(session.clientToken)
             }
+
+            if(!session.email_verified) throw new Error('NotVerifiedAccount')
+
             ConfigManager.save()
             return ret
         } else {
-            throw new Error('NotPaidAccount')
+            switch(session.message){
+                case "Invalid credentials":
+                    throw new Error('UnknownAccount')
+                case "User banned":
+                    throw new Error('BannedAccount')
+            }
+            
         }
         
     } catch (err){
@@ -55,7 +65,7 @@ exports.addAccount = async function(username, password){
 exports.removeAccount = async function(uuid){
     try {
         const authAcc = ConfigManager.getAuthAccount(uuid)
-        await Mojang.invalidate(authAcc.accessToken, ConfigManager.getClientToken())
+        await Azuriom.logout(authAcc.accessToken)
         ConfigManager.removeAuthAccount(uuid)
         ConfigManager.save()
         return Promise.resolve()
@@ -74,6 +84,8 @@ exports.removeAccount = async function(uuid){
  * @returns {Promise.<boolean>} Promise which resolves to true if the access token is valid,
  * otherwise false.
  */
+
+ /*
 exports.validateSelected = async function(){
     const current = ConfigManager.getSelectedAccount()
     const isValid = await Mojang.validate(current.accessToken, ConfigManager.getClientToken())
@@ -97,3 +109,4 @@ exports.validateSelected = async function(){
         return true
     }
 }
+*/
